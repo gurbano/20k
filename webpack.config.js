@@ -1,10 +1,12 @@
 const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const nodeEnv = process.env.NODE_ENV || 'development';
 const isProd = nodeEnv === 'production';
 
 const plugins = [
+  new CopyWebpackPlugin([ { from: './m', to: 'm' } ]),
   new webpack.DefinePlugin({
     'process.env': {
       NODE_ENV: JSON.stringify(nodeEnv)
@@ -23,7 +25,10 @@ const plugins = [
     }
   })
 ];
-
+output: {
+  // your stuff
+  publicPath: '/assets/'
+}
 var config = {
   devtool: isProd ? 'hidden-source-map' : 'source-map',
   context: path.resolve('./src'),
@@ -53,7 +58,11 @@ var config = {
           }
         : null,
       { test: /\.html$/, loader: 'html-loader' },
-      { test: /\.css$/, loaders: ['style-loader', 'css-loader'] }
+      { test: /\.css$/, loaders: ['style-loader', 'css-loader'] },
+      {
+        test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
+        loader: 'file-loader?name=assets/[name].[ext]'
+      },
     ].filter(Boolean)
   },
   resolve: {
